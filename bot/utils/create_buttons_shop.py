@@ -65,7 +65,7 @@ class ButtonsShop():
             InlineKeyboardButton(text='Отмена', callback_data='cancel'),
         )
         text = f'''
-Купить <b>{name}</b> за <b>{price}</b>?'''
+Купить <b>{name}</b> за <b>{price}</b> 🦎?'''
         return text, buttons
     
 

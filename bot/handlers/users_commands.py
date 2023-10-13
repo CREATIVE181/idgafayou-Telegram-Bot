@@ -59,7 +59,7 @@ async def give_money(message: types.Message):
     easy_sql.update(f'UPDATE wallet SET balance = balance + {money} WHERE id = {user_id}')
     user_give_link = await link_user(message.from_user.id, message.from_user.first_name)
     user_take_link = await link_user(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}')[0])
-    await message.answer(f'{user_give_link} подарил <b>{money}</b> 🦎 {user_take_link}')
+    await message.answer(f'{user_give_link} перевел <b>{money}</b> ящерки🦎')
 
 
 async def profile(message: types.Message):

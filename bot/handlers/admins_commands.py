@@ -188,7 +188,7 @@ async def wind_up_admin(message: types.Message):
     if money > 2_000 or money < 1:
         return await message.answer('Нельзя столько выдать!')
     easy_sql.update(f'UPDATE wallet SET balance = balance + {money} WHERE id = {user_id}')
-    await message.answer(f'{admin_link} выдал 🦎 {user_link}\nПричина: {cause}')
+    await message.answer(f'{admin_link} выдал 🦎 {user_link}')
     return await send_spare('give', message.from_user.id, user_id, (message.chat.title, message.chat.id), cause, message.message_id)
 
 
@@ -196,13 +196,14 @@ async def top_balance(message: types.Message):
     if (await check_on_admin(message.from_user.id)) is False:
         return
     wallets = easy_sql.select('SELECT * FROM wallet', fetch='all')
-    id_name_balance = [(await link_user(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}')[0]), balance) for user_id, balance in wallets][:30]
-    sorted_list_with_balance = sorted(id_name_balance, reverse=True, key=lambda x: x[1])
+    id_name_balance = [(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}'), balance) for user_id, balance in wallets][:30]
+    sorted_list_with_balance = sorted(id_name_balance, reverse=True, key=lambda x: x[2])
     result_msg = f'<b>Топ богачей:</b>\n\n'
-    for user, balance in sorted_list_with_balance:
+    for user_id, user, balance in sorted_list_with_balance:
+        first_name = await link_user(user_id, user[0])
         if balance == 0:
             continue
-        result_msg += f'• {user} - {balance}🦎\n'
+        result_msg += f'• {first_name} - {balance}🦎\n'
     await message.answer(result_msg)
 
 
@@ -210,13 +211,14 @@ async def top_sms(message: types.Message):
     if (await check_on_admin(message.from_user.id)) is False:
         return
     sms_count = easy_sql.select('SELECT * FROM count_sms', fetch='all')
-    id_name_sms = [(await link_user(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}')[0]), sms) for user_id, sms in sms_count][:30]
-    sorted_list_with_sms = sorted(id_name_sms, reverse=True, key=lambda x: x[1])
+    id_name_sms = [(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}'), sms) for user_id, sms in sms_count][:30]
+    sorted_list_with_sms = sorted(id_name_sms, reverse=True, key=lambda x: x[2])
     result_msg = f'<b>Топ сообщений:</b>\n\n'
-    for user, balance in sorted_list_with_sms:
+    for user_id, user, balance in sorted_list_with_sms:
+        first_name = await link_user(user_id, user[0])
         if balance == 0:
             continue
-        result_msg += f'• {user} - {balance}🦎\n'
+        result_msg += f'• {first_name} - {balance}🦎\n'
     await message.answer(result_msg)
 
 
@@ -244,13 +246,13 @@ async def ruffle_button(callback: types.CallbackQuery):
 
 def admins_commands(dp: Dispatcher):
     dp.register_message_handler(help_admin, Command(['админ'], prefixes='!/.', ignore_case=True)) # +
-    dp.register_message_handler(wind_up_admin, Command(['give'], prefixes='!/.', ignore_case=True)) # +
+    dp.register_message_handler(wind_up_admin, Command(['resp'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(top_balance, Command(['top_balance'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(top_sms, Command(['top_sms'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(ruffle_game, OnlyCommand(only_cmd=['розыгрыш'])) # +
     dp.register_callback_query_handler(ruffle_button, Text(startswith='raffle')) # +
     
-        # dp.register_message_handler(warn, Command(['warn'], prefixes='!/.', ignore_case=True)) 
+    # dp.register_message_handler(warn, Command(['warn'], prefixes='!/.', ignore_case=True)) 
     # dp.register_message_handler(unwarn, Command(['unwarn'], prefixes='!/.', ignore_case=True)) 
     # dp.register_message_handler(ban, Command(['ban'], prefixes='!/.', ignore_case=True)) 
     # dp.register_message_handler(unban, Command(['unban'], prefixes='!/.', ignore_case=True)) 
