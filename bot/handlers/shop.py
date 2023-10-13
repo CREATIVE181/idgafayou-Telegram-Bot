@@ -54,7 +54,7 @@ async def buy_product(callback: types.CallbackQuery):
 
 
 async def cancel(callback: types.CallbackQuery):
-    await callback.message.edit_text('Выберете категорию:', reply_markup=(await bs.category()))
+    await callback.message.edit_text('Выбирете категорию:', reply_markup=(await bs.category()))
 
 
 def shop(dp: Dispatcher):
