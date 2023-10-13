@@ -75,19 +75,18 @@ async def unwarn(message: types.Message):
     user_link, admin_link, cause = await default_code(message, user_id)
     check_warns = easy_sql.check_value(f'SELECT * FROM warns WHERE id = {user_id}')
     if check_warns is False:
-        return await message.answer(f'У этого пользователя и так нет варнов!')
-    else:
-        easy_sql.update(f'UPDATE warns SET count_warns = count_warns - 1 WHERE id = {user_id}')
-        if easy_sql.select(f'SELECT count_warns FROM warns WHERE id = {user_id}')[0] == 0:
-            easy_sql.delete(f'DELETE FROM warns WHERE id = {user_id}')
-        await send_spare('unwarn', message.from_user.id, user_id, (message.chat.title, message.chat.id), cause,  message.message_id)
-        return await message.answer(f'{admin_link} снял варн {user_link}\nПричина: {cause}')
+        return await message.answer('У этого пользователя и так нет варнов!')
+    easy_sql.update(f'UPDATE warns SET count_warns = count_warns - 1 WHERE id = {user_id}')
+    if easy_sql.select(f'SELECT count_warns FROM warns WHERE id = {user_id}')[0] == 0:
+        easy_sql.delete(f'DELETE FROM warns WHERE id = {user_id}')
+    await send_spare('unwarn', message.from_user.id, user_id, (message.chat.title, message.chat.id), cause,  message.message_id)
+    return await message.answer(f'{admin_link} снял варн {user_link}\nПричина: {cause}')
     
 
 async def warn_list(message: types.Message):
     if (await check_on_admin(message.from_user.id)) is False:
         return
-    warns = easy_sql.select(f'SELECT * FROM warns', fetch='all')
+    warns = easy_sql.select('SELECT * FROM warns', fetch='all')
     id_name_warns = [(await link_user(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}')[0]), warn) for user_id, warn in warns][:30]
     sorted_list_with_warns = sorted(id_name_warns, reverse=True, key=lambda x: x[1])
     result_msg = f'<b>Список варнов:</b>\n\n'
@@ -196,7 +195,7 @@ async def wind_up_admin(message: types.Message):
 async def top_balance(message: types.Message):
     if (await check_on_admin(message.from_user.id)) is False:
         return
-    wallets = easy_sql.select(f'SELECT * FROM wallet', fetch='all')
+    wallets = easy_sql.select('SELECT * FROM wallet', fetch='all')
     id_name_balance = [(await link_user(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}')[0]), balance) for user_id, balance in wallets][:30]
     sorted_list_with_balance = sorted(id_name_balance, reverse=True, key=lambda x: x[1])
     result_msg = f'<b>Топ богачей:</b>\n\n'
@@ -210,7 +209,7 @@ async def top_balance(message: types.Message):
 async def top_sms(message: types.Message):
     if (await check_on_admin(message.from_user.id)) is False:
         return
-    sms_count = easy_sql.select(f'SELECT * FROM count_sms', fetch='all')
+    sms_count = easy_sql.select('SELECT * FROM count_sms', fetch='all')
     id_name_sms = [(await link_user(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}')[0]), sms) for user_id, sms in sms_count][:30]
     sorted_list_with_sms = sorted(id_name_sms, reverse=True, key=lambda x: x[1])
     result_msg = f'<b>Топ сообщений:</b>\n\n'

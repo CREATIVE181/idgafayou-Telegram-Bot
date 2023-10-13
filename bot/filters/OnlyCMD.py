@@ -15,7 +15,10 @@ class OnlyCommand(Filter):
         if text_cmd in commands:
             return True
 
-        result = [True if " ".join(text_cmd.split(" ")[:len(cmd.split(" "))]) == cmd else False for cmd in commands]
+        result = [
+            " ".join(text_cmd.split(" ")[: len(cmd.split(" "))]) == cmd
+            for cmd in commands
+        ]
 
         if True in result:
             return True

@@ -43,7 +43,9 @@ async def prod(callback: types.CallbackQuery):
 async def buy_product(callback: types.CallbackQuery):
     data_product = callback.data.split(':')[1:]
     balance = easy_sql.select(f'SELECT balance FROM wallet WHERE id = {callback.from_user.id}')[0]
-    button = InlineKeyboardMarkup(row_width=1).add(InlineKeyboardButton(text='Назад', callback_data=f'cancel'))
+    button = InlineKeyboardMarkup(row_width=1).add(
+        InlineKeyboardButton(text='Назад', callback_data='cancel')
+    )
     if int(data_product[-1]) > balance:
         return await callback.message.edit_text('У вас недостаточно средств на баласе!', reply_markup=button)
     easy_sql.update(f'UPDATE wallet SET balance = balance - {int(data_product[-1])} WHERE id = {callback.from_user.id}')

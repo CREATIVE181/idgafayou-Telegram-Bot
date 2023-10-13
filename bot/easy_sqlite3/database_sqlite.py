@@ -34,7 +34,4 @@ class EasySQLite3:
 
     def check_value(self, query):
         data = self.cursor.execute(query).fetchone()
-        if data is None:
-            return False
-        else:
-            return True
+        return data is not None

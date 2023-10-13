@@ -25,11 +25,10 @@ async def up_admin(message: types.Message):
     if user_id is False:
         return await message.answer('Пользователя не существует или он указан неверно!')
     check_admin = easy_sql.check_value(f'SELECT * from admins WHERE id = {user_id}')
-    if check_admin is False:
-        easy_sql.insert_into(f'INSERT INTO admins VALUES ({user_id})')
-        return await message.answer('Админ добавлен!')
-    else:
+    if check_admin is not False:
         return await message.answer('Этот пользователь уже является админом!')
+    easy_sql.insert_into(f'INSERT INTO admins VALUES ({user_id})')
+    return await message.answer('Админ добавлен!')
 
 
 async def down_admin(message: types.Message):
@@ -39,13 +38,15 @@ async def down_admin(message: types.Message):
     check_admin = easy_sql.check_value(f'SELECT * from admins WHERE id = {user_id}')
     if check_admin is False:
         return await message.answer('Этот пользователь не является админом!')
-    else:
-        easy_sql.delete(f'DELETE FROM admins WHERE id = {user_id}')
-        return await message.answer('Этот пользователь больше не админ!')
+    easy_sql.delete(f'DELETE FROM admins WHERE id = {user_id}')
+    return await message.answer('Этот пользователь больше не админ!')
     
 
 async def list_admin(message: types.Message):
-    id_admins = [admin[0] for admin in easy_sql.select(f'SELECT * FROM admins', fetch='all')]
+    id_admins = [
+        admin[0]
+        for admin in easy_sql.select('SELECT * FROM admins', fetch='all')
+    ]
     name_and_id_admins = [(easy_sql.select(f'SELECT first_name FROM users WHERE id = {id_admin}')[0], id_admin) for id_admin in id_admins]
     msg_with_admins = '<b>Список админов:</b>\n\n'
     numb = 1
@@ -72,7 +73,7 @@ async def wind_down_owner(message: types.Message):
     if user_id is False:
         user_id = message.from_user.id
     easy_sql.update(f'UPDATE wallet SET balance = 0 WHERE id = {user_id}')
-    return await message.answer(f'Баланс обнулен!')
+    return await message.answer('Баланс обнулен!')
 
 
 async def id_user_or_chat(message: types.Message):
@@ -97,7 +98,7 @@ async def declare(message: types.Message):
 
 
 async def amnesty(message: types.Message):
-    easy_sql.delete(f'DELETE FROM warns')
+    easy_sql.delete('DELETE FROM warns')
     await message.answer('Все варны пользователей удалены!')
 
 

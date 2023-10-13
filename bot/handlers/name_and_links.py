@@ -20,13 +20,13 @@ async def send_name(message: types.Message):
         if users_check is False:
             return await message.answer(fmt.quote_html(message.reply_to_message.from_user.first_name))
         name_user = easy_sql.select(f'SELECT name FROM nick WHERE id = {message.reply_to_message.from_user.id}')[0]
-        await message.answer(fmt.quote_html(name_user))
     else:
         users_check = easy_sql.check_value(f'SELECT id FROM nick WHERE id = {message.from_user.id}')
         if users_check is False:
             return await message.answer(fmt.quote_html(message.from_user.first_name))
         name_user = easy_sql.select(f'SELECT name FROM nick WHERE id = {message.from_user.id}')[0]
-        await message.answer(fmt.quote_html(name_user))
+
+    await message.answer(fmt.quote_html(name_user))
 
 
 async def add_link(message: types.Message):
@@ -44,13 +44,13 @@ async def send_link(message: types.Message):
         if users_check is False:
             return await message.answer('Пользователь не добавил свою ссылку!')
         link_user = easy_sql.select(f'SELECT link FROM links WHERE id = {message.reply_to_message.from_user.id}')[0]
-        await message.answer(fmt.quote_html(link_user))
     else:
         users_check = easy_sql.check_value(f'SELECT id FROM links WHERE id = {message.from_user.id}')
         if users_check is False:
             return await message.answer('Вы не добавили свою ссылку!')
         link_user = easy_sql.select(f'SELECT link FROM links WHERE id = {message.from_user.id}')[0]
-        await message.answer(fmt.quote_html(link_user))
+
+    await message.answer(fmt.quote_html(link_user))
 
 
 def name_and_links(dp: Dispatcher):

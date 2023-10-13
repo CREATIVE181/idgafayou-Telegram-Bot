@@ -2,11 +2,11 @@ import datetime
 
 
 async def seconds_to_unix(timedelta=None):
-    if timedelta is None:
-        result = datetime.datetime.now().timestamp()
-    else:
-        result = (datetime.datetime.now() + timedelta).timestamp()
-    return result
+    return (
+        datetime.datetime.now().timestamp()
+        if timedelta is None
+        else (datetime.datetime.now() + timedelta).timestamp()
+    )
 
 
 async def time_to_timedelta(time):

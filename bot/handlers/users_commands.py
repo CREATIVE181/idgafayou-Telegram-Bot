@@ -27,10 +27,7 @@ async def help_user(message: types.Message):
 
 async def bonus(message: types.Message):
     rand = random.choice([0,0,0,0,0,0,0,0,0,1])
-    if rand == 1:
-        rand_money = 5
-    else:
-        rand_money = 1
+    rand_money = 5 if rand == 1 else 1
     hours = 24
     check_bonus = easy_sql.check_value(f'SELECT * FROM bonus WHERE id = {message.from_user.id}')
     if check_bonus is False:

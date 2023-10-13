@@ -20,11 +20,10 @@ async def text_profile(user_id):
         status = 'Админ'
     else:
         status = 'Участник'
-    text = f'''
+    return f'''
 🖲Ник: <code>{fmt.quote_html(first_name)}</code>
 💼Статус: <code>{status}</code>
 🦎Баланс: <code>{balance}</code>
 🚫Варны: <code>{warns}/5</code>
 💌Сообщений: <code>{sms}</code>
 '''
-    return text

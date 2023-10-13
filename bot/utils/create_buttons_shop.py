@@ -12,7 +12,9 @@ from utils.create_link_user import link_user
 class ButtonsShop():
 
     async def category(self):
-        category_goods = set([i[0] for i in easy_sql.select(f'SELECT type FROM goods', fetch='all')])
+        category_goods = {
+            i[0] for i in easy_sql.select('SELECT type FROM goods', fetch='all')
+        }
         buttons = InlineKeyboardMarkup(row_width=2)
         for name in category_goods:
             buttons.insert(InlineKeyboardButton(text=name, callback_data=f'goods:{name}'))
@@ -21,23 +23,33 @@ class ButtonsShop():
     
 
     async def goods_cat(self, category_good):
-        goods = [i for i in easy_sql.select(f'SELECT id, name, variations FROM goods WHERE type = "{category_good}"', fetch='all')]
+        goods = list(
+            easy_sql.select(
+                f'SELECT id, name, variations FROM goods WHERE type = "{category_good}"',
+                fetch='all',
+            )
+        )
         buttons = InlineKeyboardMarkup(row_width=1)
         for id_good, name, var in goods:
             if var == 1:
                 buttons.insert(InlineKeyboardButton(text=name, callback_data=f'var:{id_good}'))
             else:
                 buttons.insert(InlineKeyboardButton(text=name, callback_data=f'prod:{id_good}'))
-        buttons.add(InlineKeyboardButton(text='Назад', callback_data=f'cancel'))
+        buttons.add(InlineKeyboardButton(text='Назад', callback_data='cancel'))
         return buttons
     
 
     async def variation_good(self, id_good):
-        variations_goods = [i for i in easy_sql.select(f'SELECT id_var, name FROM variations_goods WHERE id = {id_good}', fetch='all')]
+        variations_goods = list(
+            easy_sql.select(
+                f'SELECT id_var, name FROM variations_goods WHERE id = {id_good}',
+                fetch='all',
+            )
+        )
         buttons = InlineKeyboardMarkup(row_width=1)
         for id_good_var, name in variations_goods:
             buttons.insert(InlineKeyboardButton(text=name, callback_data=f'prod:{id_good}:{id_good_var}'))
-        buttons.add(InlineKeyboardButton(text='Назад', callback_data=f'cancel'))
+        buttons.add(InlineKeyboardButton(text='Назад', callback_data='cancel'))
         return buttons
 
 
@@ -46,8 +58,12 @@ class ButtonsShop():
             name, price = easy_sql.select(f'SELECT name, price FROM goods WHERE id = {all_id[0]}')
         else:
             name, price = easy_sql.select(f'SELECT name, price FROM variations_goods WHERE id = {all_id[0]} AND id_var = {all_id[1]}')
-        buttons = InlineKeyboardMarkup(row_width=1).add(InlineKeyboardButton(text='Купить', callback_data=f'buy:{":".join(all_id)}:{price}'),
-                                                           InlineKeyboardButton(text='Отмена', callback_data=f'cancel'))
+        buttons = InlineKeyboardMarkup(row_width=1).add(
+            InlineKeyboardButton(
+                text='Купить', callback_data=f'buy:{":".join(all_id)}:{price}'
+            ),
+            InlineKeyboardButton(text='Отмена', callback_data='cancel'),
+        )
         text = f'''
 Купить <b>{name}</b> за <b>{price}</b>?'''
         return text, buttons
@@ -68,10 +84,7 @@ class ButtonsShop():
             elif id_good[0] == 2:
                 await bot.unban_chat_member(chat_id=default_chat, user_id=user_id)
         else:
-            if len(id_good) == 1:
-                name = easy_sql.select(f'SELECT name FROM goods WHERE id = {id_good[0]}')[0]
-            else:
-                name = easy_sql.select(f'SELECT name FROM goods WHERE id = {id_good[0]}')[0] + ' ' +  easy_sql.select(f'SELECT name FROM variations_goods WHERE id = {id_good[0]} AND id_var = {id_good[1]}')[0]
+            name = f"{easy_sql.select(f'SELECT name FROM goods WHERE id = {id_good[0]}')[0]} {easy_sql.select(f'SELECT name FROM variations_goods WHERE id = {id_good[0]} AND id_var = {id_good[1]}')[0]}"
             user_link = await link_user(user_id, callback.from_user.first_name)
             await bot.send_message(shop_chat, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил {name}\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
             await bot.send_message(497281548, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил {name}\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
