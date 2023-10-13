@@ -71,21 +71,15 @@ class ButtonsShop():
 
     async def action(self, id_good, user_id, callback):
         id_good = list(map(int, id_good))
+        user_link = await link_user(user_id, callback.from_user.first_name)
         if len(id_good) == 1:
             if id_good[0] == 1:
-                try:
-                    warns = easy_sql.select(f'SELECT count_warns FROM warns WHERE id = {user_id}')[0]
-                    if warns == 0:
-                        return
-                    else:
-                        easy_sql.update(f'UPDATE warns SET count_warns = count_warns - 1 WHERE id = {user_id}')
-                except Exception:
-                    return
+                await bot.send_message(shop_chat, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил снятие варна\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
+                await bot.send_message(497281548, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил снятие варна\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
             elif id_good[0] == 2:
                 await bot.unban_chat_member(chat_id=default_chat, user_id=user_id)
         else:
             name = f"{easy_sql.select(f'SELECT name FROM goods WHERE id = {id_good[0]}')[0]} {easy_sql.select(f'SELECT name FROM variations_goods WHERE id = {id_good[0]} AND id_var = {id_good[1]}')[0]}"
-            user_link = await link_user(user_id, callback.from_user.first_name)
             await bot.send_message(shop_chat, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил {name}\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
             await bot.send_message(497281548, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил {name}\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
             if id_good[0] in [4, 5]:

@@ -20,7 +20,4 @@ class OnlyCommand(Filter):
             for cmd in commands
         ]
 
-        if True in result:
-            return True
-        else:
-            return False
+        return True in result

@@ -244,15 +244,15 @@ async def ruffle_button(callback: types.CallbackQuery):
 
 def admins_commands(dp: Dispatcher):
     dp.register_message_handler(help_admin, Command(['админ'], prefixes='!/.', ignore_case=True)) # +
-    dp.register_message_handler(warn, Command(['warn'], prefixes='!/.', ignore_case=True)) # +
-    dp.register_message_handler(unwarn, Command(['unwarn'], prefixes='!/.', ignore_case=True)) # +
+    # dp.register_message_handler(warn, Command(['warn'], prefixes='!/.', ignore_case=True)) # +
+    # dp.register_message_handler(unwarn, Command(['unwarn'], prefixes='!/.', ignore_case=True)) # +
     # dp.register_message_handler(ban, Command(['ban'], prefixes='!/.', ignore_case=True)) # +
     # dp.register_message_handler(unban, Command(['unban'], prefixes='!/.', ignore_case=True)) # +
     # dp.register_message_handler(kick, Command(['kick'], prefixes='!/.', ignore_case=True)) # +
     # dp.register_message_handler(mute, Command(['mute'], prefixes='!/.', ignore_case=True)) # +
     # dp.register_message_handler(unmute, Command(['unmute'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(wind_up_admin, Command(['give'], prefixes='!/.', ignore_case=True)) # +
-    dp.register_message_handler(warn_list, Command(['warn_list'], prefixes='!/.', ignore_case=True)) # +
+    # dp.register_message_handler(warn_list, Command(['warn_list'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(top_balance, Command(['top_balance'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(top_sms, Command(['top_sms'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(ruffle_game, OnlyCommand(only_cmd=['розыгрыш'])) # +
