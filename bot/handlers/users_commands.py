@@ -26,8 +26,10 @@ async def help_user(message: types.Message):
 
 
 async def bonus(message: types.Message):
-    rand = random.choice([0,0,0,0,0,0,0,0,0,1])
-    rand_money = 5 if rand == 1 else 1
+    rand = random.choice([0,0,0,0,0,0,0,1,1,1])
+    if rand == 1:
+        return await message.answer('К сожалению, вам не повезло(')
+    money = 5
     hours = 24
     check_bonus = easy_sql.check_value(f'SELECT * FROM bonus WHERE id = {message.from_user.id}')
     if check_bonus is False:
@@ -39,8 +41,8 @@ async def bonus(message: types.Message):
             await_date = str(date_time_object_bonus - datetime.datetime.now()).split('.')[0]
             return await message.answer(f'Вам осталось ждать <b>{await_date}</b>')
     easy_sql.update(f'UPDATE bonus SET time = "{datetime.datetime.now() + datetime.timedelta(hours=hours)}" WHERE id = {message.from_user.id}')
-    easy_sql.update(f'UPDATE wallet SET balance = balance + {rand_money} WHERE id = {message.from_user.id}')
-    await message.answer(f'Вы получили {rand_money} 🦎')
+    easy_sql.update(f'UPDATE wallet SET balance = balance + {money} WHERE id = {message.from_user.id}')
+    await message.answer(f'Вы получили {money} 🦎')
 
 
 async def give_money(message: types.Message):
