@@ -111,4 +111,4 @@ def owner_commands(dp: Dispatcher):
     dp.register_message_handler(wind_down_owner, Command(['обнулить'], prefixes='!/.', ignore_case=True), IDFilter(user_id=owners)) # +
     dp.register_message_handler(id_user_or_chat, Command(['id'], prefixes='!/.', ignore_case=True), IDFilter(user_id=owners)) # +
     dp.register_message_handler(declare, Command(['declare'], prefixes='!/.', ignore_case=True), IDFilter(user_id=owners)) # +
-    dp.register_message_handler(amnesty, Command(['амнистия'], prefixes='!/.', ignore_case=True), IDFilter(user_id=owners)) # +
+    # dp.register_message_handler(amnesty, Command(['амнистия'], prefixes='!/.', ignore_case=True), IDFilter(user_id=owners)) # +
