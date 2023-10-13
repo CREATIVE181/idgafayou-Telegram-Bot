@@ -232,10 +232,10 @@ ruffle_array = []
 async def ruffle_button(callback: types.CallbackQuery):
     amount = int(callback.data.split(':')[1])
     global ruffle_array
-    if len(ruffle_array) + 1 == amount:
+    if len(ruffle_array) == amount:
         ruffle_array = []
-        await callback.message.edit_text('Конец! Все призы закончились(')
-    if callback.from_user.id not in ruffle_array:
+        await callback.message.delete()
+    elif callback.from_user.id not in ruffle_array:
         ruffle_array.append(callback.from_user.id)
         easy_sql.update(f'UPDATE wallet SET balance = balance + 1 WHERE id = {callback.from_user.id}')
         return await callback.answer('Вы получили 1 змейку!')
@@ -244,17 +244,18 @@ async def ruffle_button(callback: types.CallbackQuery):
 
 def admins_commands(dp: Dispatcher):
     dp.register_message_handler(help_admin, Command(['админ'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(warn, Command(['warn'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(unwarn, Command(['unwarn'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(ban, Command(['ban'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(unban, Command(['unban'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(kick, Command(['kick'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(mute, Command(['mute'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(unmute, Command(['unmute'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(wind_up_admin, Command(['give'], prefixes='!/.', ignore_case=True)) # +
-    # dp.register_message_handler(warn_list, Command(['warn_list'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(top_balance, Command(['top_balance'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(top_sms, Command(['top_sms'], prefixes='!/.', ignore_case=True)) # +
     dp.register_message_handler(ruffle_game, OnlyCommand(only_cmd=['розыгрыш'])) # +
     dp.register_callback_query_handler(ruffle_button, Text(startswith='raffle')) # +
+    
+        # dp.register_message_handler(warn, Command(['warn'], prefixes='!/.', ignore_case=True)) 
+    # dp.register_message_handler(unwarn, Command(['unwarn'], prefixes='!/.', ignore_case=True)) 
+    # dp.register_message_handler(ban, Command(['ban'], prefixes='!/.', ignore_case=True)) 
+    # dp.register_message_handler(unban, Command(['unban'], prefixes='!/.', ignore_case=True)) 
+    # dp.register_message_handler(kick, Command(['kick'], prefixes='!/.', ignore_case=True))
+    # dp.register_message_handler(mute, Command(['mute'], prefixes='!/.', ignore_case=True))
+    # dp.register_message_handler(unmute, Command(['unmute'], prefixes='!/.', ignore_case=True))
+    # dp.register_message_handler(warn_list, Command(['warn_list'], prefixes='!/.', ignore_case=True))
 
