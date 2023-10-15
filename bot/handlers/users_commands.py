@@ -1,15 +1,17 @@
 from aiogram import types, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.dispatcher.filters import Text
 import datetime
 import asyncio
 import random
 
 from filters import OnlyCommand
-from CONFIG import easy_sql
+from CONFIG import easy_sql, bot
 from utils.find_id import find_id
 from utils.create_link_user import link_user
 from utils.check_admin import check_on_admin
 from utils.text_profile import text_profile
+from utils.create_buttons_shop import ButtonsShop
 
 
 async def help_user(message: types.Message):
@@ -27,8 +29,6 @@ async def help_user(message: types.Message):
 
 async def bonus(message: types.Message):
     rand = random.choice([0,0,0,0,0,0,0,1,1,1])
-    if rand == 1:
-        return await message.answer('К сожалению, вам не удалось поймать ящерку 🦎(')
     money = 1 if random.choice([0, 0, 0, 1]) == 0 else 5
     hours = 24
     check_bonus = easy_sql.check_value(f'SELECT * FROM bonus WHERE id = {message.from_user.id}')
@@ -41,6 +41,8 @@ async def bonus(message: types.Message):
             await_date = str(date_time_object_bonus - datetime.datetime.now()).split('.')[0]
             return await message.answer(f'Вам осталось ждать <b>{await_date}</b>')
     easy_sql.update(f'UPDATE bonus SET time = "{datetime.datetime.now() + datetime.timedelta(hours=hours)}" WHERE id = {message.from_user.id}')
+    if rand == 1:
+        return await message.answer('К сожалению, вам не удалось поймать ящерку 🦎')
     easy_sql.update(f'UPDATE wallet SET balance = balance + {money} WHERE id = {message.from_user.id}')
     await message.answer(f'Вы получили {money} 🦎')
 
@@ -59,7 +61,7 @@ async def give_money(message: types.Message):
     easy_sql.update(f'UPDATE wallet SET balance = balance + {money} WHERE id = {user_id}')
     user_give_link = await link_user(message.from_user.id, message.from_user.first_name)
     user_take_link = await link_user(user_id, easy_sql.select(f'SELECT first_name FROM users WHERE id = {user_id}')[0])
-    await message.answer(f'{user_give_link} перевел <b>{money}</b> ящерки🦎')
+    await message.answer(f'{user_give_link} перевел <b>{money}</b> 🦎 {user_take_link}')
 
 
 async def profile(message: types.Message):
@@ -70,25 +72,24 @@ async def profile(message: types.Message):
     else:
         user_id = message.from_user.id
     text = await text_profile(user_id)
-    button = InlineKeyboardMarkup(row_width=1).add(InlineKeyboardButton(text='Гайд', url='https://telegra.ph/𝕾𝖊𝖗𝖕𝖊𝖓𝖙𝖊-𝖘𝖍𝖔𝖕-03-20'))
+    button = InlineKeyboardMarkup(row_width=1).add(
+        InlineKeyboardButton(
+            text='Гайд', url='https://telegra.ph/𝕾𝖊𝖗𝖕𝖊𝖓𝖙𝖊-𝖘𝖍𝖔𝖕-03-20'
+        ),
+        InlineKeyboardButton(text='Магазин', callback_data='shop_profile:'),
+    )
     await message.answer(text, reply_markup=button)
 
 
-async def marry(message: types.Message):
-    a = await message.answer('Агу-агу\n\nP.s. Это вторая пасхалка :)')
-    await asyncio.sleep(0.3)
-    await a.delete()
+bs = ButtonsShop()
+async def shop_profile(callback: types.CallbackQuery):
+    buttons = await bs.category()
+    user = await link_user(callback.from_user.id, callback.from_user.first_name)
+    await bot.send_message(callback.from_user.id, f'''
+Привет, {user} , добро пожаловать в змеиный маркет
 
-array_user = []
-async def baby(message: types.Message):
-    global array_user
-    if message.from_user.id in array_user:
-        return
-    array_user.append(message.from_user.id)
-    a = await message.answer('Мама, я беременна...\n\nP.s. Это третья и последняя пасхалка!!! Держи приз 50 ящерок')
-    easy_sql.update(f'UPDATE wallet SET balance = balance + 50 WHERE id = {message.from_user.id}')
-    await asyncio.sleep(0.3)
-    await a.delete()
+Тут ты сможешь воспользоваться услугами нашего магазина 🖤''', reply_markup=buttons)
+
 
 
 def users_commands(dp: Dispatcher):
@@ -96,5 +97,3 @@ def users_commands(dp: Dispatcher):
     dp.register_message_handler(help_user, OnlyCommand(only_cmd=['помощь']))
     dp.register_message_handler(give_money, OnlyCommand(only_cmd=['перевести']))
     dp.register_message_handler(profile, OnlyCommand(only_cmd=['профиль']))
-    dp.register_message_handler(marry, OnlyCommand(only_cmd=['брак']))
-    dp.register_message_handler(baby, OnlyCommand(only_cmd=['ребенок']))
