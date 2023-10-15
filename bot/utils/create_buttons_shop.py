@@ -53,7 +53,10 @@ class ButtonsShop():
         return buttons
 
 
-    async def what_good(self, all_id):
+    async def what_good(self, all_id, user_id):
+        check = easy_sql.check_value(f'SELECT id FROM rings WHERE id = {user_id}')
+        if check is not False:
+            return 'У вас уже есть кольцо!', InlineKeyboardMarkup(row_width=1).add(InlineKeyboardButton(text='Отмена', callback_data='cancel'))
         if len(all_id) == 1:
             name, price = easy_sql.select(f'SELECT name, price FROM goods WHERE id = {all_id[0]}')
         else:
@@ -72,10 +75,12 @@ class ButtonsShop():
     async def action(self, id_good, user_id, callback):
         id_good = list(map(int, id_good))
         user_link = await link_user(user_id, callback.from_user.first_name)
-        if len(id_good) == 1:
+        if id_good in [1, 2]:
             goods = {1: 'варна', 2: 'бана'}   
             await bot.send_message(shop_chat, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил снятие <b>{goods[id_good[0]]}</b>\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
             await bot.send_message(497281548, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил снятие <b>{goods[id_good[0]]}</b>\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
+        elif id_good[0] == 6:
+            easy_sql.insert_into(f'INSERT INTO rings VALUES ({user_id}, 1)')
         else:
             name = f"{easy_sql.select(f'SELECT name FROM goods WHERE id = {id_good[0]}')[0]} {easy_sql.select(f'SELECT name FROM variations_goods WHERE id = {id_good[0]} AND id_var = {id_good[1]}')[0]}"
             await bot.send_message(shop_chat, f'{user_link} [{f"<code>{callback.from_user.id}</code>" if callback.from_user.username is None else f"@{callback.from_user.username}"}] купил {name}\n\n1) tg://openmessage?user_id={callback.from_user.id}\n2) tg://user?id={callback.from_user.id}')
