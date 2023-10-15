@@ -35,3 +35,7 @@ class EasySQLite3:
     def check_value(self, query):
         data = self.cursor.execute(query).fetchone()
         return data is not None
+    
+    def create_table(self, query):
+        self.cursor.execute(query)
+        self.conn.commit()

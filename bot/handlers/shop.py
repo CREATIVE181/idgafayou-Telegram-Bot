@@ -32,11 +32,7 @@ async def var_product(callback: types.CallbackQuery):
 
 async def prod(callback: types.CallbackQuery):
     data_product = callback.data.split(':')[1:]
-    result = await bs.what_good(data_product)
-    ##########################
-    if data_product[0] == '6':
-        return await callback.message.edit_text('Вы нашли первую пасхалку на следующее обновление :)\nP.s. Их несколько, так что, ищите')
-    ##########################
+    result = await bs.what_good(data_product, callback.from_user.id)
     await callback.message.edit_text(result[0], reply_markup=result[1])
 
 

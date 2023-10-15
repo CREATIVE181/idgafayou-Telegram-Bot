@@ -85,11 +85,11 @@ bs = ButtonsShop()
 async def shop_profile(callback: types.CallbackQuery):
     buttons = await bs.category()
     user = await link_user(callback.from_user.id, callback.from_user.first_name)
+    await callback.answer()
     await bot.send_message(callback.from_user.id, f'''
 Привет, {user} , добро пожаловать в змеиный маркет
 
 Тут ты сможешь воспользоваться услугами нашего магазина 🖤''', reply_markup=buttons)
-
 
 
 def users_commands(dp: Dispatcher):
@@ -97,3 +97,4 @@ def users_commands(dp: Dispatcher):
     dp.register_message_handler(help_user, OnlyCommand(only_cmd=['помощь']))
     dp.register_message_handler(give_money, OnlyCommand(only_cmd=['перевести']))
     dp.register_message_handler(profile, OnlyCommand(only_cmd=['профиль']))
+    dp.register_callback_query_handler(shop_profile, Text(startswith='shop_profile'))
